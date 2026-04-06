@@ -2,9 +2,7 @@
 
 import json
 import math
-from typing import Any
 
-from opentelemetry import trace
 from strands import Agent, tool
 
 from setup.config import create_model
@@ -124,13 +122,7 @@ def create_agent() -> Agent:
 
 
 def ask(agent: Agent, question: str) -> str:
-    """Ask the agent a question with OTEL tracing."""
-    tracer = trace.get_tracer(__name__)
-    with tracer.start_as_current_span("strands_agent_call") as span:
-        span.set_attribute("gen_ai.prompt.0.content", question)
-        span.set_attribute("gen_ai.prompt.0.role", "user")
-        response = agent(question)
-        output_text = getattr(response, "output", str(response))
-        span.set_attribute("gen_ai.completion.0.content", output_text)
-        span.set_attribute("gen_ai.completion.0.role", "ai")
-    return output_text
+    """Ask the agent a question. Strands auto-emits OTEL spans for the agent call,
+    each LLM invocation, and each tool execution — no manual tracing needed."""
+    response = agent(question)
+    return getattr(response, "output", str(response))
