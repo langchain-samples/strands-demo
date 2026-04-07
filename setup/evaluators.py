@@ -42,7 +42,22 @@ def create_llm_judge_evaluator() -> None:
         "evaluators": [
             {
                 "structured": {
-                    "hub_ref": "strands-answer-correctness-eval:latest",
+                    "prompt": [
+                        ["system", (
+                            "You are an expert evaluator. Given a question, the AI's answer, "
+                            "and a reference answer, judge whether the AI answer is correct.\n\n"
+                            "Grade as correct (true) if the AI answer captures the key facts "
+                            "from the reference, even if worded differently. Grade as incorrect "
+                            "(false) if the AI answer is missing critical information or is "
+                            "factually wrong."
+                        )],
+                        ["human", (
+                            "Question: {{input}}\n\n"
+                            "AI Answer: {{output}}\n\n"
+                            "Reference Answer: {{reference}}\n\n"
+                            "Is the AI answer correct?"
+                        )],
+                    ],
                     "model": {
                         "lc": 1, "type": "constructor",
                         "id": ["langchain", "chat_models", "openai", "ChatOpenAI"],

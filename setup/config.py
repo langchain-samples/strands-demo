@@ -22,16 +22,6 @@ def auth_headers() -> Dict[str, str]:
     return {"x-api-key": LANGSMITH_API_KEY, "Content-Type": "application/json"}
 
 
-def get_owner() -> str:
-    import requests
-    resp = requests.get(
-        f"{LANGSMITH_API_URL}/api/v1/settings", headers=auth_headers(), timeout=30
-    )
-    if resp.status_code >= 300:
-        return "-"
-    return resp.json().get("tenant_handle") or "-"
-
-
 # ---------------------------------------------------------------------------
 # Model — swap between OpenAI and Bedrock here
 # ---------------------------------------------------------------------------

@@ -92,33 +92,20 @@ def web_search(query: str) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# Agent
-# ---------------------------------------------------------------------------
-
-SYSTEM_PROMPT = """\
-You are a research assistant that helps answer technical questions about \
-AI/ML tools and platforms. You have access to:
-
-- **lookup_knowledge_base**: Query the internal knowledge base for information \
-about specific tools and platforms (LangSmith, Strands, Bedrock, OpenTelemetry).
-- **calculator**: Evaluate mathematical expressions.
-- **web_search**: Search the web for current information.
-
-When answering questions:
-1. Always check the knowledge base first for relevant topics.
-2. Use the calculator for any numerical computations.
-3. Fall back to web search for topics not in the knowledge base.
-4. Synthesize information from multiple tools when needed.
-5. Be concise but thorough — cite which tool provided each piece of information.\
-"""
-
 TOOLS = [lookup_knowledge_base, calculator, web_search]
 
 
-def create_agent() -> Agent:
-    """Create a Strands research assistant agent with tools."""
-    return Agent(model=create_model(), system_prompt=SYSTEM_PROMPT, tools=TOOLS)
+# ---------------------------------------------------------------------------
+# Agent factory
+# ---------------------------------------------------------------------------
+
+def create_agent(system_prompt: str) -> Agent:
+    """Create a Strands research assistant agent with tools.
+
+    Args:
+        system_prompt: The system prompt to use — typically pulled from PromptHub.
+    """
+    return Agent(model=create_model(), system_prompt=system_prompt, tools=TOOLS)
 
 
 def ask(agent: Agent, question: str) -> str:
