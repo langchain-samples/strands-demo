@@ -60,12 +60,14 @@ def create_llm_judge_evaluator() -> None:
                     ],
                     "model": {
                         "lc": 1, "type": "constructor",
-                        "id": ["langchain", "chat_models", "openai", "ChatOpenAI"],
+                        "id": ["langchain_aws", "chat_models", "ChatBedrockConverse"],
                         "kwargs": {
                             "temperature": 1,
-                            "model": "gpt-4.1-mini",
-                            "use_responses_api": True,
-                            "openai_api_key": {"id": ["OPENAI_API_KEY"], "lc": 1, "type": "secret"},
+                            "model_id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+                            "region_name": "us-east-1",
+                            "aws_access_key_id": {"id": ["AWS_ACCESS_KEY_ID"], "lc": 1, "type": "secret"},
+                            "aws_secret_access_key": {"id": ["AWS_SECRET_ACCESS_KEY"], "lc": 1, "type": "secret"},
+                            "aws_session_token": {"id": ["AWS_SESSION_TOKEN"], "lc": 1, "type": "secret"},
                         },
                     },
                     "schema": {
