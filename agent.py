@@ -1,8 +1,10 @@
-"""Strands research assistant agent with tools."""
+"""Strands research assistant agent with tools and thread support."""
 
 import json
 import math
+from typing import Optional
 
+from opentelemetry import trace
 from strands import Agent, tool
 
 from setup.config import create_model
@@ -108,8 +110,21 @@ def create_agent(system_prompt: str) -> Agent:
     return Agent(model=create_model(), system_prompt=system_prompt, tools=TOOLS)
 
 
-def ask(agent: Agent, question: str) -> str:
+def ask(agent: Agent, question: str, thread_id: Optional[str] = None) -> str:
     """Ask the agent a question. Strands auto-emits OTEL spans for the agent call,
-    each LLM invocation, and each tool execution — no manual tracing needed."""
+    each LLM invocation, and each tool execution.
+
+    Args:
+        question: The user's question.
+        thread_id: Optional thread ID for LangSmith conversation tracking.
+            Groups multiple calls into a single thread in the LangSmith UI.
+    """
+    if thread_id:
+        tracer = trace.get_tracer(__name__)
+        with tracer.start_as_current_span("conversation_turn") as span:
+            span.set_attribute("langsmith.metadata.session_id", thread_id)
+            response = agent(question)
+            return getattr(response, "output", str(response))
+
     response = agent(question)
     return getattr(response, "output", str(response))
